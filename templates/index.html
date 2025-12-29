@@ -1,0 +1,1024 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description"
+        content="Cardiovascular Disease Risk Assessment - Predict your heart disease risk using advanced machine learning">
+    <title>Heart Health Risk Assessment | CardioPredict</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-light: #818cf8;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #06b6d4;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --bg-dark: #0f172a;
+            --bg-card: #1e293b;
+            --bg-input: #334155;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border: #475569;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            --gradient-heart: linear-gradient(135deg, #ff6b6b 0%, #ee5a5a 50%, #ff8e8e 100%);
+            --shadow-glow: 0 0 40px rgba(99, 102, 241, 0.3);
+            --shadow-card: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--bg-dark);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+
+        .bg-animation::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background:
+                radial-gradient(circle at 20% 80%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(236, 72, 153, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(6, 182, 212, 0.1) 0%, transparent 40%);
+            animation: bgMove 20s ease-in-out infinite;
+        }
+
+        @keyframes bgMove {
+
+            0%,
+            100% {
+                transform: translate(0, 0) rotate(0deg);
+            }
+
+            33% {
+                transform: translate(30px, -30px) rotate(5deg);
+            }
+
+            66% {
+                transform: translate(-20px, 20px) rotate(-5deg);
+            }
+        }
+
+        /* Floating Particles */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: var(--primary-light);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: float 15s infinite;
+        }
+
+        @keyframes float {
+
+            0%,
+            100% {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 0;
+            }
+
+            10% {
+                opacity: 0.3;
+            }
+
+            90% {
+                opacity: 0.3;
+            }
+
+            100% {
+                transform: translateY(-100vh) rotate(720deg);
+                opacity: 0;
+            }
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            padding: 3rem 1rem 2rem;
+            position: relative;
+        }
+
+        .logo {
+            display: inline-flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .heart-icon {
+            font-size: 3rem;
+            background: var(--gradient-heart);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: heartbeat 1.5s ease-in-out infinite;
+            filter: drop-shadow(0 0 10px rgba(255, 107, 107, 0.5));
+        }
+
+        @keyframes heartbeat {
+
+            0%,
+            100% {
+                transform: scale(1);
+            }
+
+            14% {
+                transform: scale(1.15);
+            }
+
+            28% {
+                transform: scale(1);
+            }
+
+            42% {
+                transform: scale(1.15);
+            }
+
+            70% {
+                transform: scale(1);
+            }
+        }
+
+        h1 {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            background: linear-gradient(135deg, #fff 0%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+            font-weight: 400;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem 3rem;
+        }
+
+        /* Form Card */
+        .form-card {
+            background: var(--bg-card);
+            border-radius: 24px;
+            padding: 2.5rem;
+            box-shadow: var(--shadow-card);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .form-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: var(--gradient-1);
+        }
+
+        .section-title {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .section-title i {
+            color: var(--primary-light);
+        }
+
+        /* Form Grid */
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Form Group */
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 0.85rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+            transition: color 0.3s ease;
+        }
+
+        .form-group:hover label {
+            color: var(--primary-light);
+        }
+
+        .input-wrapper {
+            position: relative;
+        }
+
+        .input-wrapper i {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            transition: color 0.3s ease;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 0.875rem 1rem 0.875rem 2.75rem;
+            background: var(--bg-input);
+            border: 2px solid transparent;
+            border-radius: 12px;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+        }
+
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.15);
+        }
+
+        input:focus+i,
+        select:focus+i {
+            color: var(--primary-light);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+        }
+
+        select option {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .select-wrapper::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        /* Submit Button */
+        .submit-btn {
+            width: 100%;
+            padding: 1.25rem 2rem;
+            background: var(--gradient-1);
+            border: none;
+            border-radius: 16px;
+            color: white;
+            font-size: 1.1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.75rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .submit-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .submit-btn:hover::before {
+            left: 100%;
+        }
+
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.4);
+        }
+
+        .submit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .submit-btn:disabled {
+            opacity: 0.7;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .submit-btn.loading .btn-text {
+            opacity: 0;
+        }
+
+        .submit-btn.loading .spinner {
+            opacity: 1;
+        }
+
+        .spinner {
+            position: absolute;
+            width: 24px;
+            height: 24px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            opacity: 0;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        /* Result Section */
+        .result-section {
+            margin-top: 2rem;
+            display: none;
+        }
+
+        .result-section.show {
+            display: block;
+            animation: slideUp 0.5s ease;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .result-card {
+            background: var(--bg-card);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .result-card.low-risk {
+            border-color: var(--success);
+            box-shadow: 0 0 40px rgba(16, 185, 129, 0.2);
+        }
+
+        .result-card.high-risk {
+            border-color: var(--danger);
+            box-shadow: 0 0 40px rgba(239, 68, 68, 0.2);
+        }
+
+        .result-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            animation: popIn 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        @keyframes popIn {
+            0% {
+                transform: scale(0);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .result-card.low-risk .result-icon {
+            color: var(--success);
+        }
+
+        .result-card.high-risk .result-icon {
+            color: var(--danger);
+        }
+
+        .result-title {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .result-card.low-risk .result-title {
+            color: var(--success);
+        }
+
+        .result-card.high-risk .result-title {
+            color: var(--danger);
+        }
+
+        .result-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .probability-meter {
+            background: var(--bg-input);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .probability-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            font-weight: 500;
+        }
+
+        .probability-bar {
+            height: 12px;
+            background: var(--bg-dark);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        .probability-fill {
+            height: 100%;
+            border-radius: 6px;
+            transition: width 1s ease;
+            background: linear-gradient(90deg, var(--success), var(--warning), var(--danger));
+        }
+
+        .recommendations {
+            text-align: left;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 12px;
+            padding: 1.25rem;
+            margin-top: 1rem;
+        }
+
+        .recommendations h4 {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary-light);
+            margin-bottom: 0.75rem;
+        }
+
+        .recommendations ul {
+            list-style: none;
+            color: var(--text-secondary);
+        }
+
+        .recommendations li {
+            padding: 0.5rem 0;
+            padding-left: 1.5rem;
+            position: relative;
+        }
+
+        .recommendations li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--success);
+            font-weight: bold;
+        }
+
+        /* Info Tooltips */
+        .info-icon {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 16px;
+            height: 16px;
+            background: var(--text-muted);
+            color: var(--bg-dark);
+            border-radius: 50%;
+            font-size: 10px;
+            margin-left: 4px;
+            cursor: help;
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+        }
+
+        footer a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .form-card {
+                padding: 1.5rem;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--bg-card);
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            box-shadow: var(--shadow-card);
+            transform: translateX(150%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .toast.show {
+            transform: translateX(0);
+        }
+
+        .toast.error {
+            border-left: 4px solid var(--danger);
+        }
+
+        .toast.success {
+            border-left: 4px solid var(--success);
+        }
+    </style>
+</head>
+
+<body>
+    <div class="bg-animation"></div>
+    <div class="particles" id="particles"></div>
+
+    <header>
+        <div class="logo">
+            <i class="fas fa-heartbeat heart-icon"></i>
+        </div>
+        <h1>CardioPredict</h1>
+        <p class="subtitle">Advanced AI-Powered Cardiovascular Disease Risk Assessment</p>
+    </header>
+
+    <main class="container">
+        <form class="form-card" id="predictionForm">
+            <!-- Personal Information -->
+            <h3 class="section-title">
+                <i class="fas fa-user"></i>
+                Personal Information
+            </h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="age">Age (years)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="age" name="age" min="20" max="100" required placeholder="e.g., 45">
+                        <i class="fas fa-calendar-alt"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sex">Sex</label>
+                    <div class="input-wrapper select-wrapper">
+                        <select id="sex" name="sex" required>
+                            <option value="">Select...</option>
+                            <option value="0">Female</option>
+                            <option value="1">Male</option>
+                        </select>
+                        <i class="fas fa-venus-mars"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="education">Education Level</label>
+                    <div class="input-wrapper select-wrapper">
+                        <select id="education" name="education" required>
+                            <option value="">Select...</option>
+                            <option value="1">Some High School</option>
+                            <option value="2">High School/GED</option>
+                            <option value="3">Some College</option>
+                            <option value="4">College Graduate</option>
+                        </select>
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Lifestyle Factors -->
+            <h3 class="section-title">
+                <i class="fas fa-smoking"></i>
+                Lifestyle Factors
+            </h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="cigsPerDay">Cigarettes Per Day</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="cigsPerDay" name="cigsPerDay" min="0" max="100" required
+                            placeholder="e.g., 0">
+                        <i class="fas fa-smoking"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Medical History -->
+            <h3 class="section-title">
+                <i class="fas fa-file-medical"></i>
+                Medical History
+            </h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="BPMeds">Blood Pressure Medication</label>
+                    <div class="input-wrapper select-wrapper">
+                        <select id="BPMeds" name="BPMeds" required>
+                            <option value="">Select...</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                        <i class="fas fa-pills"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="prevalentStroke">History of Stroke</label>
+                    <div class="input-wrapper select-wrapper">
+                        <select id="prevalentStroke" name="prevalentStroke" required>
+                            <option value="">Select...</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                        <i class="fas fa-brain"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="prevalentHyp">Hypertension</label>
+                    <div class="input-wrapper select-wrapper">
+                        <select id="prevalentHyp" name="prevalentHyp" required>
+                            <option value="">Select...</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                        <i class="fas fa-heart-pulse"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="diabetes">Diabetes</label>
+                    <div class="input-wrapper select-wrapper">
+                        <select id="diabetes" name="diabetes" required>
+                            <option value="">Select...</option>
+                            <option value="0">No</option>
+                            <option value="1">Yes</option>
+                        </select>
+                        <i class="fas fa-droplet"></i>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clinical Measurements -->
+            <h3 class="section-title">
+                <i class="fas fa-stethoscope"></i>
+                Clinical Measurements
+            </h3>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="totChol">Total Cholesterol (mg/dL)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="totChol" name="totChol" min="100" max="600" step="0.1" required
+                            placeholder="e.g., 200">
+                        <i class="fas fa-vial"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="sysBP">Systolic BP (mmHg)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="sysBP" name="sysBP" min="80" max="250" step="0.1" required
+                            placeholder="e.g., 120">
+                        <i class="fas fa-gauge-high"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="diaBP">Diastolic BP (mmHg)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="diaBP" name="diaBP" min="40" max="150" step="0.1" required
+                            placeholder="e.g., 80">
+                        <i class="fas fa-gauge"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="BMI">BMI (kg/m²)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="BMI" name="BMI" min="10" max="60" step="0.1" required
+                            placeholder="e.g., 25.5">
+                        <i class="fas fa-weight-scale"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="heartRate">Heart Rate (bpm)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="heartRate" name="heartRate" min="40" max="200" required
+                            placeholder="e.g., 72">
+                        <i class="fas fa-heart"></i>
+                    </div>
+                </div>
+                <div class="form-group">
+                    <label for="glucose">Glucose (mg/dL)</label>
+                    <div class="input-wrapper">
+                        <input type="number" id="glucose" name="glucose" min="40" max="400" step="0.1" required
+                            placeholder="e.g., 100">
+                        <i class="fas fa-syringe"></i>
+                    </div>
+                </div>
+            </div>
+
+            <button type="submit" class="submit-btn" id="submitBtn">
+                <span class="btn-text">
+                    <i class="fas fa-wand-magic-sparkles"></i>
+                    Analyze Risk
+                </span>
+                <span class="spinner"></span>
+            </button>
+        </form>
+
+        <!-- Results Section -->
+        <section class="result-section" id="resultSection">
+            <div class="result-card" id="resultCard">
+                <div class="result-icon" id="resultIcon"></div>
+                <h2 class="result-title" id="resultTitle"></h2>
+                <p class="result-description" id="resultDescription"></p>
+
+                <div class="probability-meter">
+                    <div class="probability-label">
+                        <span>Risk Probability</span>
+                    </div>
+                    <div class="probability-bar">
+                        <div class="probability-fill" id="probabilityFill" style="width: 0%"></div>
+                    </div>
+                </div>
+
+                <div class="recommendations" id="recommendations">
+                    <h4><i class="fas fa-lightbulb"></i> Recommendations</h4>
+                    <ul id="recommendationList"></ul>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <p>
+            <i class="fas fa-shield-heart"></i>
+            CardioPredict - AI-Powered Health Assessment<br>
+            <small>Disclaimer: This tool is for educational purposes only and should not replace professional medical
+                advice.</small>
+        </p>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div class="toast" id="toast">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="toastMessage"></span>
+    </div>
+
+    <script>
+        // Create floating particles
+        const particlesContainer = document.getElementById('particles');
+        for (let i = 0; i < 20; i++) {
+            const particle = document.createElement('div');
+            particle.className = 'particle';
+            particle.style.left = Math.random() * 100 + '%';
+            particle.style.animationDelay = Math.random() * 15 + 's';
+            particle.style.animationDuration = (Math.random() * 10 + 10) + 's';
+            particlesContainer.appendChild(particle);
+        }
+
+        // Form handling
+        const form = document.getElementById('predictionForm');
+        const submitBtn = document.getElementById('submitBtn');
+        const resultSection = document.getElementById('resultSection');
+        const resultCard = document.getElementById('resultCard');
+        const toast = document.getElementById('toast');
+
+        function showToast(message, type = 'error') {
+            const toastMessage = document.getElementById('toastMessage');
+            toastMessage.textContent = message;
+            toast.className = `toast ${type} show`;
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 4000);
+        }
+
+        function getEducationOneHot(education) {
+            return {
+                education_1_0: education === '1' ? 1.0 : 0.0,
+                education_2_0: education === '2' ? 1.0 : 0.0,
+                education_3_0: education === '3' ? 1.0 : 0.0,
+                education_4_0: education === '4' ? 1.0 : 0.0
+            };
+        }
+
+        function getRecommendations(isHighRisk, probability) {
+            const recommendations = [];
+
+            if (isHighRisk) {
+                recommendations.push('Schedule an appointment with your healthcare provider immediately');
+                recommendations.push('Monitor your blood pressure regularly');
+                recommendations.push('Consider lifestyle modifications under medical supervision');
+                recommendations.push('Get regular cardiovascular screenings');
+            } else {
+                recommendations.push('Continue maintaining a healthy lifestyle');
+                recommendations.push('Exercise regularly (at least 150 minutes per week)');
+                recommendations.push('Maintain a balanced diet low in saturated fats');
+                recommendations.push('Schedule annual health check-ups');
+            }
+
+            // Add specific recommendations based on form values
+            const cigsPerDay = parseFloat(document.getElementById('cigsPerDay').value);
+            if (cigsPerDay > 0) {
+                recommendations.push('Consider smoking cessation programs');
+            }
+
+            const bmi = parseFloat(document.getElementById('BMI').value);
+            if (bmi > 25) {
+                recommendations.push('Work towards achieving a healthy BMI through diet and exercise');
+            }
+
+            return recommendations;
+        }
+
+        function displayResults(data) {
+            const isHighRisk = data.predicted_chd === 1;
+            const probability = (data.probability_chd * 100).toFixed(1);
+
+            resultSection.classList.add('show');
+            resultCard.className = `result-card ${isHighRisk ? 'high-risk' : 'low-risk'}`;
+
+            document.getElementById('resultIcon').innerHTML = isHighRisk
+                ? '<i class="fas fa-triangle-exclamation"></i>'
+                : '<i class="fas fa-shield-heart"></i>';
+
+            document.getElementById('resultTitle').textContent = isHighRisk
+                ? 'Elevated Risk Detected'
+                : 'Low Risk Assessment';
+
+            document.getElementById('resultDescription').textContent = isHighRisk
+                ? 'Based on the provided information, the model indicates an elevated risk of cardiovascular disease. Please consult with a healthcare professional.'
+                : 'Based on the provided information, the model indicates a low risk of cardiovascular disease. Continue maintaining your healthy lifestyle!';
+
+            // Animate probability bar
+            setTimeout(() => {
+                document.getElementById('probabilityFill').style.width = probability + '%';
+            }, 100);
+
+            // Add recommendations
+            const recommendations = getRecommendations(isHighRisk, probability);
+            const recommendationList = document.getElementById('recommendationList');
+            recommendationList.innerHTML = recommendations.map(rec => `<li>${rec}</li>`).join('');
+
+            // Scroll to results
+            resultSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            // Show loading state
+            submitBtn.classList.add('loading');
+            submitBtn.disabled = true;
+
+            // Get education one-hot encoding
+            const educationOneHot = getEducationOneHot(document.getElementById('education').value);
+
+            // Prepare data
+            const formData = {
+                age: parseFloat(document.getElementById('age').value),
+                sex: parseFloat(document.getElementById('sex').value),
+                cigsPerDay: parseFloat(document.getElementById('cigsPerDay').value),
+                BPMeds: parseFloat(document.getElementById('BPMeds').value),
+                prevalentStroke: parseFloat(document.getElementById('prevalentStroke').value),
+                prevalentHyp: parseFloat(document.getElementById('prevalentHyp').value),
+                diabetes: parseFloat(document.getElementById('diabetes').value),
+                totChol: parseFloat(document.getElementById('totChol').value),
+                sysBP: parseFloat(document.getElementById('sysBP').value),
+                diaBP: parseFloat(document.getElementById('diaBP').value),
+                BMI: parseFloat(document.getElementById('BMI').value),
+                heartRate: parseFloat(document.getElementById('heartRate').value),
+                glucose: parseFloat(document.getElementById('glucose').value),
+                ...educationOneHot
+            };
+
+            try {
+                const response = await fetch('/predict', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.detail || 'Prediction failed');
+                }
+
+                const data = await response.json();
+                displayResults(data);
+                showToast('Analysis completed successfully!', 'success');
+
+            } catch (error) {
+                console.error('Error:', error);
+                showToast(error.message || 'Failed to get prediction. Please try again.', 'error');
+            } finally {
+                submitBtn.classList.remove('loading');
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Input validation visual feedback
+        document.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('invalid', (e) => {
+                e.preventDefault();
+                input.style.borderColor = 'var(--danger)';
+            });
+            input.addEventListener('input', () => {
+                input.style.borderColor = 'transparent';
+            });
+        });
+    </script>
+</body>
+
+</html>
